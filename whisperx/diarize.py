@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from pyannote.audio import Pipeline
 from typing import Optional, Union
+from pathlib import Path
 import torch
 
 from .audio import load_audio, SAMPLE_RATE
