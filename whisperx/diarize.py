@@ -8,29 +8,6 @@ import torch
 
 from .audio import load_audio, SAMPLE_RATE
 
-def load_pipeline_from_pretrained(path_to_config: str | Path) -> Pipeline:
-    path_to_config = Path(path_to_config)
-
-    print(f"Loading pyannote pipeline from {path_to_config}...")
-    # the paths in the config are relative to the current working directory
-    # so we need to change the working directory to the model path
-    # and then change it back
-
-    cwd = Path.cwd().resolve()  # store current working directory
-
-    # first .parent is the folder of the config, second .parent is the folder containing the>
-    cd_to = path_to_config.parent.parent.resolve()
-
-    print(f"Changing working directory to {cd_to}")
-    os.chdir(cd_to)
-
-    pipeline = Pipeline.from_pretrained(path_to_config)
-
-    print(f"Changing working directory back to {cwd}")
-    os.chdir(cwd)
-
-    return pipeline
-
 class DiarizationPipeline:
     def __init__(
         self,
@@ -40,7 +17,7 @@ class DiarizationPipeline:
     ):
         if isinstance(device, str):
             device = torch.device(device)
-        self.model = Pipeline.from_pretrained(model_name, use_auth_token=use_auth_token).to(device) if "pyannote/speaker-diarization-3.1" in model_name else load_pipeline_from_pretrained(model_name)
+        self.model = Pipeline.from_pretrained(model_name, use_auth_token=use_auth_token).to(device)
 
     def __call__(self, audio: Union[str, np.ndarray], num_speakers=None, min_speakers=None, max_speakers=None):
         if isinstance(audio, str):
